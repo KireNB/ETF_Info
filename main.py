@@ -9,8 +9,8 @@ from email.message import EmailMessage
 TARGET_ISIN = "IE00B3YLTY66"
 ISIN_TO_TICKER = {
     "IE00B3YLTY66": {
-        "ticker": "VWCE.DE",
-        "name": "Vanguard FTSE All-World UCITS ETF",
+        "ticker": "SPYI.DE",  # oder der korrekte Ticker laut Yahoo
+        "name": "SPDR MSCI All Country World Investable Market UCITS ETF (Acc)",
     },
 }
 
@@ -34,7 +34,7 @@ def get_last_week_change(ticker):
     return round(change_percent, 2)
 
 def send_email(subject, body):
-    sender = os.getenv("EMAIL_USER")
+    sender = os.getenv("EMAIL_SENDER")
     password = os.getenv("EMAIL_PASSWORD")
     receiver = os.getenv("EMAIL_RECEIVER")
 
