@@ -1,25 +1,26 @@
 # 📊 ETF Weekly Report mit KI-Zusammenfassung & E-Mail-Versand
 
-Dieses Projekt analysiert wöchentlich die Kursentwicklung eines ausgewählten ETFs anhand seiner **ISIN** und versendet einen kompakten Report per E-Mail. Zusätzlich wird eine KI-basierte Zusammenfassung der möglichen Kursbewegungen generiert – ganz ohne OpenAI oder API-Kosten!
+Dieses Projekt analysiert wöchentlich die Kursentwicklung eines ETFs (basierend auf ISIN), generiert eine kompakte KI-Zusammenfassung und verschickt das Ergebnis automatisch per E-Mail.  
+**Kein API-Schlüssel nötig** – läuft vollständig automatisiert über GitHub Actions.
 
 ---
 
 ## 🔧 Features
 
-- 📈 Berechnung der wöchentlichen Kursänderung eines ETFs
-- 📬 Automatischer Versand eines E-Mail-Reports
-- 🧠 KI-Zusammenfassung möglicher Kursursachen via Hugging Face (ohne API-Key)
-- ⏱ Automatische Ausführung via GitHub Actions (wöchentlich & manuell triggerbar)
+- 📈 Wöchentliche Berechnung der Kursveränderung eines ETFs (z. B. über Xetra)
+- 📬 Automatischer Versand des Berichts per E-Mail
+- 🧠 KI-Zusammenfassung via Hugging Face (`google/flan-t5-small`) – **ohne Authentifizierung**
+- 🕒 Wöchentlicher GitHub Actions Workflow (manuell und automatisch startbar)
 
 ---
 
-## 🔎 Beispielausgabe
+## 📤 Beispiel-Report (E-Mail-Inhalt)
 
 ```text
-ETF Report – Kalenderwoche 28
+ETF Report – Kalenderwoche 29
 
 📌 ETF: SPDR MSCI All Country World Investable Market UCITS ETF (Acc)
-📈 Wöchentliche Veränderung: +1.34%
+📈 Wöchentliche Veränderung: -0.78 %
 
 🧠 KI-Zusammenfassung:
-Die Kursentwicklung des ETFs könnte mit globalen Marktbewegungen, Zentralbankentscheidungen oder makroökonomischen Trends in Zusammenhang stehen.
+Die Kursveränderung des ETFs könnte auf globale Marktverunsicherung, Veränderungen der Zinspolitik oder konjunkturelle Abschwächung zurückzuführen sein.
