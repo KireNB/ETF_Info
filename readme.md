@@ -9,7 +9,7 @@ Dieses Projekt nutzt **[Yahoo Finance](https://finance.yahoo.com)**, **Hugging F
 
 ✔️ Wöchentliche Kursveränderung deines ETFs berechnen  
 ✔️ Automatische Interpretation durch eine KI (z. B. Hugging Face Modell)  
-✔️ Ausgabe im Terminal oder per Mail  
+✔️ Ausgabe im Terminal **und per E-Mail**  
 ✔️ Kompatibel mit ISIN-Eingabe statt Ticker  
 ✔️ Vollständig automatisiert via GitHub Actions oder manuell ausführbar
 
@@ -19,7 +19,7 @@ Dieses Projekt nutzt **[Yahoo Finance](https://finance.yahoo.com)**, **Hugging F
 
 ```bash
 ETF_Info/
-├── main.py              # Hauptlogik: Kursdaten laden, KI-Zusammenfassung
+├── main.py              # Hauptlogik: Kursdaten laden, KI-Zusammenfassung, E-Mail
 ├── gpt_summary.py       # KI-Logik über Hugging Face oder OpenAI
 ├── .github/workflows/
 │   └── etf_report.yml   # GitHub Actions Workflow (automatisch & manuell)
