@@ -1,21 +1,17 @@
 import yfinance as yf
 from datetime import datetime, timedelta
 from gpt_summary import get_ai_summary
+import smtplib
+import os
+from email.message import EmailMessage
 
-# 🆔 Hier trägst du deine Ziel-ISIN ein
+# ISIN-Konfiguration
 TARGET_ISIN = "IE00B3YLTY66"
-
-# 🗺️ Manuelles Mapping von ISIN → Ticker (kann erweitert werden)
 ISIN_TO_TICKER = {
     "IE00B3YLTY66": {
-        "ticker": "VWCE.DE",  # Vanguard FTSE All-World UCITS ETF (EUR)
+        "ticker": "VWCE.DE",
         "name": "Vanguard FTSE All-World UCITS ETF",
     },
-    "US78462F1030": {
-        "ticker": "SPY",
-        "name": "SPDR S&P 500 ETF Trust",
-    },
-    # Weitere ISINs hier einfügen
 }
 
 def get_last_week_change(ticker):
@@ -37,11 +33,30 @@ def get_last_week_change(ticker):
     change_percent = ((end_price - start_price) / start_price) * 100
     return round(change_percent, 2)
 
+def send_email(subject, body):
+    sender = os.getenv("EMAIL_USER")
+    password = os.getenv("EMAIL_PASSWORD")
+    receiver = os.getenv("EMAIL_RECEIVER")
+
+    msg = EmailMessage()
+    msg["From"] = sender
+    msg["To"] = receiver
+    msg["Subject"] = subject
+    msg.set_content(body)
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+            smtp.starttls()
+            smtp.login(sender, password)
+            smtp.send_message(msg)
+        print("📬 E-Mail erfolgreich versendet.")
+    except Exception as e:
+        print(f"❌ Fehler beim E-Mail-Versand: {e}")
+
 def main():
     etf_info = ISIN_TO_TICKER.get(TARGET_ISIN)
-
     if not etf_info:
-        print(f"❌ ISIN {TARGET_ISIN} ist nicht in der Mapping-Tabelle vorhanden.")
+        print(f"❌ ISIN {TARGET_ISIN} ist nicht bekannt.")
         return
 
     ticker = etf_info["ticker"]
@@ -54,12 +69,19 @@ def main():
 
     summary = get_ai_summary(ticker, change)
 
-    print(f"📄 ETF: {name}")
-    print(f"🔢 ISIN: {TARGET_ISIN}")
-    print(f"📈 Ticker: {ticker}")
-    print(f"📉 Veränderung letzte Woche: {change:.2f}%")
-    print("🧠 KI-Zusammenfassung:")
-    print(summary)
+    # Bericht zusammenbauen
+    report = (
+        f"📄 ETF: {name}\n"
+        f"🔢 ISIN: {TARGET_ISIN}\n"
+        f"📈 Ticker: {ticker}\n"
+        f"📉 Veränderung letzte Woche: {change:.2f}%\n\n"
+        f"🧠 KI-Zusammenfassung:\n{summary}"
+    )
+
+    print(report)
+
+    # 📬 Mail senden
+    send_email(f"📈 ETF-Wochenreport – {name}", report)
 
 if __name__ == "__main__":
     main()
