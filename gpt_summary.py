@@ -1,3 +1,4 @@
+import os
 import requests
 
 def get_ai_summary(etf_ticker, weekly_change):
@@ -16,7 +17,11 @@ def get_ai_summary(etf_ticker, weekly_change):
         }
     }
 
-    response = requests.post(model_url, json=payload)
+    headers = {
+        "Authorization": f"Bearer {os.getenv('HUGGINGFACE_API_KEY')}"
+    }
+
+    response = requests.post(model_url, json=payload, headers=headers)
 
     if response.status_code != 200:
         return f"Hugging Face API error: {response.status_code}, {response.text}"
