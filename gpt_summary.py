@@ -2,7 +2,7 @@ import os
 import requests
 
 def get_ai_summary(etf_ticker, weekly_change):
-    model_url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
+    model_url = "https://api-inference.huggingface.co/models/google/flan-t5-large"
 
     prompt = (
         f"Der ETF mit dem Ticker {etf_ticker} hat sich in dieser Woche um {weekly_change:.2f}% verändert. "
