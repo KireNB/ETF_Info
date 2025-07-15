@@ -1,0 +1,26 @@
+name: ETF Weekly Report
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Jeden Montag um 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run ETF Report
+        run: python main.py
