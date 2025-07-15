@@ -1,27 +1,25 @@
-# 📊 ETF Weekly Report Bot
+# 📊 ETF Weekly Report mit KI-Zusammenfassung & E-Mail-Versand
 
-Automatischer ETF-Report direkt in deine Mailbox – inklusive KI-Zusammenfassung über die Kursentwicklung deines ETFs.  
-Dieses Projekt nutzt **[Yahoo Finance](https://finance.yahoo.com)**, **Hugging Face Transformers** und **GitHub Actions**, um dir jede Woche (oder auf Knopfdruck) ein kurzes Marktupdate zu liefern.
-
----
-
-## 🧠 Was macht das Tool?
-
-✔️ Wöchentliche Kursveränderung deines ETFs berechnen  
-✔️ Automatische Interpretation durch eine KI (z. B. Hugging Face Modell)  
-✔️ Ausgabe im Terminal **und per E-Mail**  
-✔️ Kompatibel mit ISIN-Eingabe statt Ticker  
-✔️ Vollständig automatisiert via GitHub Actions oder manuell ausführbar
+Dieses Projekt analysiert wöchentlich die Kursentwicklung eines ausgewählten ETFs anhand seiner **ISIN** und versendet einen kompakten Report per E-Mail. Zusätzlich wird eine KI-basierte Zusammenfassung der möglichen Kursbewegungen generiert – ganz ohne OpenAI oder API-Kosten!
 
 ---
 
-## ⚙️ Projektstruktur
+## 🔧 Features
 
-```bash
-ETF_Info/
-├── main.py              # Hauptlogik: Kursdaten laden, KI-Zusammenfassung, E-Mail
-├── gpt_summary.py       # KI-Logik über Hugging Face oder OpenAI
-├── .github/workflows/
-│   └── etf_report.yml   # GitHub Actions Workflow (automatisch & manuell)
-├── requirements.txt     # Abhängigkeiten
-└── README.md            # Diese Datei
+- 📈 Berechnung der wöchentlichen Kursänderung eines ETFs
+- 📬 Automatischer Versand eines E-Mail-Reports
+- 🧠 KI-Zusammenfassung möglicher Kursursachen via Hugging Face (ohne API-Key)
+- ⏱ Automatische Ausführung via GitHub Actions (wöchentlich & manuell triggerbar)
+
+---
+
+## 🔎 Beispielausgabe
+
+```text
+ETF Report – Kalenderwoche 28
+
+📌 ETF: SPDR MSCI All Country World Investable Market UCITS ETF (Acc)
+📈 Wöchentliche Veränderung: +1.34%
+
+🧠 KI-Zusammenfassung:
+Die Kursentwicklung des ETFs könnte mit globalen Marktbewegungen, Zentralbankentscheidungen oder makroökonomischen Trends in Zusammenhang stehen.
