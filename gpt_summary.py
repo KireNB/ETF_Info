@@ -2,7 +2,12 @@ import os
 import requests
 import logging
 
-logging.basicConfig(filename="llm_api.log", level=logging.DEBUG)
+# Logging für Fehlersuche
+logging.basicConfig(
+    filename="llm_api.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 def get_ai_summary(etf_ticker, weekly_change):
     prompt = (
@@ -16,21 +21,25 @@ def get_ai_summary(etf_ticker, weekly_change):
 
     headers = {
         "Authorization": f"Bearer {api_key}",
+        "HTTP-Referer": "https://deine-seite.de",  # optional, aber empfohlen laut OpenRouter
+        "X-Title": "ETF-Report",                  # optional: Projekttitel
         "Content-Type": "application/json"
     }
 
-    data = {
-        "model": "deepseek-chat",
+    payload = {
+        "model": "tngtech/deepseek-r1t-chimera:free",  # ✅ Kostenlose Variante
         "messages": [
-            {"role": "system", "content": "Fasse ETF-Entwicklungen in verständlicher Sprache zusammen."},
+            {"role": "system", "content": "Fasse ETF-Entwicklungen kurz und verständlich zusammen."},
             {"role": "user", "content": prompt}
         ],
-        "temperature": 0.7
+        "temperature": 0.7,
+        "max_tokens": 150
     }
 
     try:
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
-        logging.debug("API-Response: %s", response.text)
+        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+        logging.debug("OpenRouter-Response: %s", response.text)
+
         if response.status_code != 200:
             return f"OpenRouter API error: {response.status_code}, {response.text}"
 
@@ -38,8 +47,8 @@ def get_ai_summary(etf_ticker, weekly_change):
         return result["choices"][0]["message"]["content"].strip()
 
     except Exception as e:
-        logging.error("Fehler beim Abruf der Zusammenfassung: %s", e)
-        return f"Fehler: {e}"
+        logging.error("Fehler bei OpenRouter-Anfrage: %s", e)
+        return f"Fehler bei der Anfrage: {e}"
 
 
 # import os
