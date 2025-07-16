@@ -4,9 +4,6 @@ from gpt_summary import get_ai_summary
 import smtplib
 import os
 from email.message import EmailMessage
-from dotenv import load_dotenv
-load_dotenv()
-
 
 # ISIN-Konfiguration
 TARGET_ISIN = "IE00B3YLTY66"
@@ -70,7 +67,7 @@ def main():
         print("❌ Nicht genügend Kursdaten verfügbar.")
         return
 
-    summary = get_ai_summary(ticker, change)
+    summary = get_ai_summary(name, change)
 
     # Bericht zusammenbauen
     report = (

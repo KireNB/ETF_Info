@@ -9,10 +9,12 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-def get_ai_summary(etf_ticker, weekly_change):
+def get_ai_summary(etf_name, weekly_change):
     prompt = (
-        f"Der ETF mit dem Ticker {etf_ticker} hat sich in dieser Woche um {weekly_change:.2f}% verändert. "
-        "Nenne mögliche Gründe für diese Kursveränderung in 2-3 kurzen Sätzen."
+        f"Der ETF '{etf_name}' hat in der vergangenen Woche eine Kursveränderung von {weekly_change:.2f}% gezeigt. "
+        "Fasse in drei klaren und präzisen Sätzen auf Deutsch zusammen, welche globalen wirtschaftlichen, politischen oder "
+        "marktbezogenen Entwicklungen in diesem Zeitraum wahrscheinlich zu dieser Kursbewegung geführt haben. "
+        "Formuliere professionell, faktenbasiert und ohne vage Spekulationen."
     )
 
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -21,15 +23,15 @@ def get_ai_summary(etf_ticker, weekly_change):
 
     headers = {
         "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "https://deine-seite.de",  # optional, aber empfohlen laut OpenRouter
-        "X-Title": "ETF-Report",                  # optional: Projekttitel
+        "HTTP-Referer": "https://deinprojekt.de",
+        "X-Title": "ETF-Report",
         "Content-Type": "application/json"
     }
 
     payload = {
-        "model": "tngtech/deepseek-r1t-chimera:free",  # ✅ Kostenlose Variante
+        "model": "tngtech/deepseek-r1t-chimera:free",
         "messages": [
-            {"role": "system", "content": "Fasse ETF-Entwicklungen kurz und verständlich zusammen."},
+            {"role": "system", "content": "Fasse ETF-Entwicklungen sachlich, professionell und auf Deutsch zusammen."},
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.7,
@@ -49,49 +51,3 @@ def get_ai_summary(etf_ticker, weekly_change):
     except Exception as e:
         logging.error("Fehler bei OpenRouter-Anfrage: %s", e)
         return f"Fehler bei der Anfrage: {e}"
-
-
-# import os
-# import requests
-
-# def get_ai_summary(etf_ticker, weekly_change):
-#     model_url = "https://api-inference.huggingface.co/models/google/flan-t5-base"
-
-#     prompt = (
-#         f"Der ETF mit dem Ticker {etf_ticker} hat sich in dieser Woche um {weekly_change:.2f}% verändert. "
-#         "Nenne mögliche Gründe für diese Kursveränderung in 2-3 kurzen Sätzen."
-#     )
-
-#     payload = {
-#         "inputs": f"Erkläre: {prompt}",
-#         "parameters": {
-#             "max_new_tokens": 100,
-#             "temperature": 0.7
-#         }
-#     }
-
-#     api_key = os.getenv("HUGGINGFACE_API_KEY")
-#     if not api_key:
-#         return "Fehler: HUGGINGFACE_API_KEY ist nicht gesetzt."
-
-#     headers = {
-#         "Authorization": f"Bearer {api_key}"
-#     }
-
-#     response = requests.post(model_url, headers=headers, json=payload)
-
-#     if response.status_code != 200:
-#         return f"Hugging Face API error: {response.status_code}, {response.text}"
-
-#     try:
-#         result = response.json()
-#         if isinstance(result, list) and "generated_text" in result[0]:
-#             return result[0]["generated_text"]
-#         elif isinstance(result, list):
-#             return result[0].get("generated_text", "Keine Zusammenfassung erhalten.")
-#         else:
-#             return f"Unerwartetes Antwortformat: {result}"
-#     except Exception as e:
-#         return f"Fehler bei der Verarbeitung der Antwort: {e}"
-
-#     return "Keine Zusammenfassung erhalten."
