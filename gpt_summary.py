@@ -11,10 +11,12 @@ logging.basicConfig(
 
 def get_ai_summary(etf_name, weekly_change):
     prompt = (
-        f"Der ETF '{etf_name}' hat in der vergangenen Woche eine Kursveränderung von {weekly_change:.2f}% gezeigt. "
+        f" Du bist angesehener Experte für die Trendanalyse von globalen Aktienfonds."
+        "Der ETF '{etf_name}' hat in der vergangenen Woche eine Kursveränderung von {weekly_change:.2f}% gezeigt. "
         "Fasse in drei klaren und präzisen Sätzen auf Deutsch zusammen, welche globalen wirtschaftlichen, politischen oder "
         "marktbezogenen Entwicklungen in diesem Zeitraum wahrscheinlich zu dieser Kursbewegung geführt haben. "
-        "Formuliere professionell, faktenbasiert und ohne vage Spekulationen."
+        "Formuliere professionell, faktenbasiert und ohne vage Spekulationen, Nenne konkret die Faktoren, die "
+        "am wahrscheinlichsten sind. Vermeide WÖrter wie vielleicht oder womöglich"
     )
 
     api_key = os.getenv("OPENROUTER_API_KEY")
