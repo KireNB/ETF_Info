@@ -1,64 +1,87 @@
+import yfinance as yf
+from datetime import datetime, timedelta
+from gpt_summary import get_ai_summary
+import smtplib
 import os
-import requests
-import logging
+from email.message import EmailMessage
 
-# Logging für Fehlersuche
-logging.basicConfig(
-    filename="llm_api.log",
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
+# ISIN-Konfiguration
+TARGET_ISIN = "IE00B3YLTY66"
+ISIN_TO_TICKER = {
+    "IE00B3YLTY66": {
+        "ticker": "SPYI.DE",  # oder der korrekte Ticker laut Yahoo
+        "name": "SPDR MSCI All Country World Investable Market UCITS ETF (Acc)",
+    },
+}
 
-def get_ai_summary(etf_name, weekly_change):
-    prompt = (
-        f"Der ETF '{etf_name}' hat in der vergangenen Woche eine Kursveränderung von {weekly_change:.2f}% gezeigt. "
-        "Du bist ein anerkannter Experte für ETF- und Finanzmarktanalysen. "
-        "Formuliere eine professionelle, faktenbasierte und auf Deutsch verfasste Analyse in folgendem Stil:\n\n"
-        "1. Eine kurze Einleitung mit ETF-Namen, Wochenveränderung und Kontext.\n"
-        "2. Drei klar nummerierte Hauptgründe für die Kursveränderung. Jeder Grund soll sachlich, spezifisch und wirtschaftlich fundiert sein. "
-        "Beziehe dich dabei auf relevante Ereignisse oder Daten (z. B. Zinsentscheidungen, Inflationszahlen, geopolitische Entwicklungen).\n"
-        "3. Ein kurzer, zusammenfassender Satz am Ende.\n\n"
-        "Vermeide Wörter wie 'vielleicht', 'möglicherweise' oder andere unpräzise Formulierungen."
+def get_last_week_change(ticker):
+    today = datetime.today()
+    last_week = today - timedelta(days=7)
+
+    data = yf.download(
+        ticker,
+        start=last_week.strftime("%Y-%m-%d"),
+        end=today.strftime("%Y-%m-%d"),
+        auto_adjust=True
     )
 
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        return "Fehler: OPENROUTER_API_KEY ist nicht gesetzt."
+    if len(data) < 2:
+        return None
 
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "HTTP-Referer": "https://deinprojekt.de",
-        "X-Title": "ETF-Report",
-        "Content-Type": "application/json"
-    }
+    start_price = float(data["Close"].iloc[0])
+    end_price = float(data["Close"].iloc[-1])
+    change_percent = ((end_price - start_price) / start_price) * 100
+    return round(change_percent, 2)
 
-    payload = {
-        "model": "tngtech/deepseek-r1t-chimera:free",
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "Du bist ein hochqualifizierter Finanzanalyst, spezialisiert auf weltweite ETF- und Marktanalysen. "
-                    "Du schreibst auf Deutsch, professionell, faktenbasiert und klar strukturiert. "
-                    "Vermeide vage Aussagen. Verwende Aufzählungen und gliedere deine Analyse sauber."
-                )
-            },
-            {"role": "user", "content": prompt}
-        ],
-        "temperature": 0.7,
-        "max_tokens": 400
-    }
+def send_email(subject, body):
+    sender = os.getenv("EMAIL_SENDER")
+    password = os.getenv("EMAIL_PASSWORD")
+    receiver = os.getenv("EMAIL_RECEIVER")
+
+    msg = EmailMessage()
+    msg["From"] = sender
+    msg["To"] = receiver
+    msg["Subject"] = subject
+    msg.set_content(body)
 
     try:
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
-        logging.debug("OpenRouter-Response: %s", response.text)
-
-        if response.status_code != 200:
-            return f"OpenRouter API error: {response.status_code}, {response.text}"
-
-        result = response.json()
-        return result["choices"][0]["message"]["content"].strip()
-
+        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+            smtp.starttls()
+            smtp.login(sender, password)
+            smtp.send_message(msg)
+        print("📬 E-Mail erfolgreich versendet.")
     except Exception as e:
-        logging.error("Fehler bei OpenRouter-Anfrage: %s", e)
-        return f"Fehler bei der Anfrage: {e}"
+        print(f"❌ Fehler beim E-Mail-Versand: {e}")
+
+def main():
+    etf_info = ISIN_TO_TICKER.get(TARGET_ISIN)
+    if not etf_info:
+        print(f"❌ ISIN {TARGET_ISIN} ist nicht bekannt.")
+        return
+
+    ticker = etf_info["ticker"]
+    name = etf_info["name"]
+
+    change = get_last_week_change(ticker)
+    if change is None:
+        print("❌ Nicht genügend Kursdaten verfügbar.")
+        return
+
+    summary = get_ai_summary(name, change)
+
+    # Bericht zusammenbauen
+    report = (
+        f"📄 ETF: {name}\n"
+        f"🔢 ISIN: {TARGET_ISIN}\n"
+        f"📈 Ticker: {ticker}\n"
+        f"📉 Veränderung letzte Woche: {change:.2f}%\n\n"
+        f"🧠 KI-Zusammenfassung:\n{summary}"
+    )
+
+    print(report)
+
+    # 📬 Mail senden
+    send_email(f"📈 ETF-Wochenreport – {name}", report)
+
+if __name__ == "__main__":
+    main()

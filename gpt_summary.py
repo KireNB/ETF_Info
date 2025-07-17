@@ -12,11 +12,13 @@ logging.basicConfig(
 def get_ai_summary(etf_name, weekly_change):
     prompt = (
         f"Der ETF '{etf_name}' hat in der vergangenen Woche eine Kursveränderung von {weekly_change:.2f}% gezeigt. "
-        "Fasse in drei klaren und präzisen Sätzen auf Deutsch zusammen, welche globalen wirtschaftlichen, politischen oder "
-        "marktbezogenen Entwicklungen in diesem Zeitraum wahrscheinlich zu dieser Kursbewegung geführt haben. "
-        "Formuliere professionell, faktenbasiert und ohne vage Spekulationen. "
-        "Du bist angesehener Experte für die Trendanalysen von weltweiten ETF Fonds und hast eine große Expertise bezüglich aller möglicher Einflüsse. "
-        "Nenne konkret 3 Fakten (mit Nummerierung), die am wahrscheinlichsten sind. Vermeide Wörter wie 'vielleicht' oder 'womöglich'."
+        "Du bist ein anerkannter Experte für ETF- und Finanzmarktanalysen. "
+        "Formuliere eine professionelle, faktenbasierte und auf Deutsch verfasste Analyse in folgendem Stil:\n\n"
+        "1. Eine kurze Einleitung mit ETF-Namen, Wochenveränderung und Kontext.\n"
+        "2. Drei klar nummerierte Hauptgründe für die Kursveränderung. Jeder Grund soll sachlich, spezifisch und wirtschaftlich fundiert sein. "
+        "Beziehe dich dabei auf relevante Ereignisse oder Daten (z. B. Zinsentscheidungen, Inflationszahlen, geopolitische Entwicklungen).\n"
+        "3. Ein kurzer, zusammenfassender Satz am Ende.\n\n"
+        "Vermeide Wörter wie 'vielleicht', 'möglicherweise' oder andere unpräzise Formulierungen."
     )
 
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -33,11 +35,18 @@ def get_ai_summary(etf_name, weekly_change):
     payload = {
         "model": "tngtech/deepseek-r1t-chimera:free",
         "messages": [
-            {"role": "system", "content": "Fasse ETF-Entwicklungen sachlich, professionell und auf Deutsch zusammen."},
+            {
+                "role": "system",
+                "content": (
+                    "Du bist ein hochqualifizierter Finanzanalyst, spezialisiert auf weltweite ETF- und Marktanalysen. "
+                    "Du schreibst auf Deutsch, professionell, faktenbasiert und klar strukturiert. "
+                    "Vermeide vage Aussagen. Verwende Aufzählungen und gliedere deine Analyse sauber."
+                )
+            },
             {"role": "user", "content": prompt}
         ],
         "temperature": 0.7,
-        "max_tokens": 150
+        "max_tokens": 400
     }
 
     try:
