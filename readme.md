@@ -1,26 +1,35 @@
-# 📊 ETF Weekly Report mit KI-Zusammenfassung & E-Mail-Versand
+# 📊 ETF Monatsreport mit KI-Analyse & E-Mail-Versand
 
-Dieses Projekt analysiert wöchentlich die Kursentwicklung eines ETFs (basierend auf ISIN), generiert eine kompakte KI-Zusammenfassung und verschickt das Ergebnis automatisch per E-Mail.  
-**Kein API-Schlüssel nötig** – läuft vollständig automatisiert über GitHub Actions.
+Dieses Projekt analysiert **monatlich** die Kursentwicklung eines ETFs (basierend auf ISIN), generiert eine **faktenbasierte GPT-Zusammenfassung mit drei Hauptfaktoren** und versendet das Ergebnis automatisch per E-Mail.  
+Die Ausführung erfolgt automatisiert über **GitHub Actions**.
 
 ---
 
 ## 🔧 Features
 
-- 📈 Wöchentliche Berechnung der Kursveränderung eines ETFs (z. B. über Xetra)
-- 📬 Automatischer Versand des Berichts per E-Mail
-- 🧠 KI-Zusammenfassung via Hugging Face (`google/flan-t5-small`) – **ohne Authentifizierung**
-- 🕒 Wöchentlicher GitHub Actions Workflow (manuell und automatisch startbar)
+- 📈 **Monatliche** Kursveränderung eines globalen ETFs (z. B. über Xetra)
+- 🧠 KI-Zusammenfassung via **OpenRouter API** (z. B. DeepSeek, Mixtral etc.)
+- 📬 Automatischer Versand des Reports per E-Mail (SMTP)
+- 🔁 GitHub Actions Workflow: Monatlich & manuell startbar
+- 🔒 Verwendung von Secrets für API-Keys und Zugangsdaten
+
+---
+
+## 🗓 Zeitplan (GitHub Actions)
+
+- ⏰ **Automatisch jeden Monat am 1. Tag um 08:00 UTC**
+- 🖱 Zusätzlich manuell per Button ausführbar (`workflow_dispatch`)
 
 ---
 
 ## 📤 Beispiel-Report (E-Mail-Inhalt)
 
 ```text
-ETF Report – Kalenderwoche 29
+📄 ETF: SPDR MSCI All Country World Investable Market UCITS ETF (Acc)
+🔢 ISIN: IE00B3YLTY66
+📈 Ticker: SPYI.DE
+📆 Veränderung im laufenden Monat: -1.72%
 
-📌 ETF: SPDR MSCI All Country World Investable Market UCITS ETF (Acc)
-📈 Wöchentliche Veränderung: -0.78 %
-
-🧠 KI-Zusammenfassung:
-Die Kursveränderung des ETFs könnte auf globale Marktverunsicherung, Veränderungen der Zinspolitik oder konjunkturelle Abschwächung zurückzuführen sein.
+1. Die US-Inflationsrate für Juni lag über den Erwartungen, was Zinssorgen verstärkte.
+2. Die chinesischen Exportzahlen fielen schwach aus und belasteten die globale Konjunkturstimmung.
+3. Die Spannungen im Nahen Osten führten zu verstärkter Risikoaversion bei Investoren.

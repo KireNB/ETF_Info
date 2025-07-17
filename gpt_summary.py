@@ -9,16 +9,11 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-def get_ai_summary(etf_name, weekly_change):
+def get_ai_summary(etf_name, monthly_change):
     prompt = (
-        f"Der ETF '{etf_name}' hat in der vergangenen Woche eine Kursveränderung von {weekly_change:.2f}% gezeigt. "
-        "Du bist ein anerkannter Experte für ETF- und Finanzmarktanalysen. "
-        "Formuliere eine professionelle, faktenbasierte und auf Deutsch verfasste Analyse in folgendem Stil:\n\n"
-        "1. Eine kurze Einleitung mit ETF-Namen, Wochenveränderung und Kontext.\n"
-        "2. Drei klar nummerierte Hauptgründe für die Kursveränderung. Jeder Grund soll sachlich, spezifisch und wirtschaftlich fundiert sein. "
-        "Beziehe dich dabei auf relevante Ereignisse oder Daten (z. B. Zinsentscheidungen, Inflationszahlen, geopolitische Entwicklungen).\n"
-        "3. Ein kurzer, zusammenfassender Satz am Ende.\n\n"
-        "Vermeide Wörter wie 'vielleicht', 'möglicherweise' oder andere unpräzise Formulierungen."
+        f"Der ETF '{etf_name}' hat im vergangenen Monat eine Kursveränderung von {monthly_change:.2f}% gezeigt. "
+        "Nenne die drei wahrscheinlichsten Ursachen dafür – nummeriert, knapp und faktenbasiert. "
+        "Schreibe auf Deutsch. Keine Einleitung, kein Fazit. Nur die drei Gründe."
     )
 
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -28,7 +23,7 @@ def get_ai_summary(etf_name, weekly_change):
     headers = {
         "Authorization": f"Bearer {api_key}",
         "HTTP-Referer": "https://deinprojekt.de",
-        "X-Title": "ETF-Report",
+        "X-Title": "ETF-Monatsanalyse",
         "Content-Type": "application/json"
     }
 
@@ -38,14 +33,13 @@ def get_ai_summary(etf_name, weekly_change):
             {
                 "role": "system",
                 "content": (
-                    "Du bist ein hochqualifizierter Finanzanalyst, spezialisiert auf weltweite ETF- und Marktanalysen. "
-                    "Du schreibst auf Deutsch, professionell, faktenbasiert und klar strukturiert. "
-                    "Vermeide vage Aussagen. Verwende Aufzählungen und gliedere deine Analyse sauber."
+                    "Du bist ein erfahrener Finanzanalyst und gibst monatlich drei präzise Gründe für die Kursentwicklung eines ETFs. "
+                    "Deine Antwort besteht ausschließlich aus den drei nummerierten Gründen – keine Einleitung, kein Fazit, keine Wiederholung der Frage."
                 )
             },
             {"role": "user", "content": prompt}
         ],
-        "temperature": 0.7,
+        "temperature": 0.5,
         "max_tokens": 1000
     }
 

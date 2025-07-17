@@ -1,8 +1,8 @@
-name: ETF Weekly Report
+name: ETF Monthly Report
 
 on:
   schedule:
-    - cron: '0 8 * * 1'  # Jeden Montag um 08:00 UTC
+    - cron: '0 8 1 * *'  # Am 1. Tag jedes Monats um 08:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -13,8 +13,6 @@ jobs:
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      # HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
-      
 
     steps:
       - uses: actions/checkout@v3

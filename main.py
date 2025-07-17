@@ -1,5 +1,5 @@
 import yfinance as yf
-from datetime import datetime, timedelta
+from datetime import datetime
 from gpt_summary import get_ai_summary
 import smtplib
 import os
@@ -9,18 +9,18 @@ from email.message import EmailMessage
 TARGET_ISIN = "IE00B3YLTY66"
 ISIN_TO_TICKER = {
     "IE00B3YLTY66": {
-        "ticker": "SPYI.DE",  # oder der korrekte Ticker laut Yahoo
+        "ticker": "SPYI.DE",  # Ticker laut Yahoo Finance
         "name": "SPDR MSCI All Country World Investable Market UCITS ETF (Acc)",
     },
 }
 
-def get_last_week_change(ticker):
+def get_last_month_change(ticker):
     today = datetime.today()
-    last_week = today - timedelta(days=7)
+    month_start = today.replace(day=1)
 
     data = yf.download(
         ticker,
-        start=last_week.strftime("%Y-%m-%d"),
+        start=month_start.strftime("%Y-%m-%d"),
         end=today.strftime("%Y-%m-%d"),
         auto_adjust=True
     )
@@ -62,26 +62,26 @@ def main():
     ticker = etf_info["ticker"]
     name = etf_info["name"]
 
-    change = get_last_week_change(ticker)
+    change = get_last_month_change(ticker)
     if change is None:
         print("❌ Nicht genügend Kursdaten verfügbar.")
         return
 
     summary = get_ai_summary(name, change)
 
-    # Bericht zusammenbauen
+    # Monatsbericht ohne Einleitung
     report = (
         f"📄 ETF: {name}\n"
         f"🔢 ISIN: {TARGET_ISIN}\n"
         f"📈 Ticker: {ticker}\n"
-        f"📉 Veränderung letzte Woche: {change:.2f}%\n\n"
-        f"🧠 KI-Zusammenfassung:\n{summary}"
+        f"📆 Veränderung im laufenden Monat: {change:.2f}%\n\n"
+        f"{summary}"  # Nur die 3 Gründe
     )
 
     print(report)
 
-    # 📬 Mail senden
-    send_email(f"📈 ETF-Wochenreport – {name}", report)
+    # E-Mail versenden
+    send_email(f"📊 ETF-Monatsreport – {name}", report)
 
 if __name__ == "__main__":
     main()
